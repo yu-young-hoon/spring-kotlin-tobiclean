@@ -1,6 +1,8 @@
 package com.yyh.domain
 
-import com.yyh.domain.Member.MemberCreateRequest
+import com.yyh.domain.Member.MemberRegisterRequest
+import com.yyh.util.createMemberRegisterRequest
+import com.yyh.util.createPasswordEncoder
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -14,30 +16,22 @@ class MemberTest {
 
     @BeforeEach
     fun setUp() {
-        passwordEncoder = object : PasswordEncoder {
-            override fun encode(password: String): String {
-                return "encoded_$password"
-            }
-
-            override fun matches(password: String, passwordHash: String): Boolean {
-                return passwordHash == encode(password)
-            }
-        }
-        member = Member.create(MemberCreateRequest("dbtlek@gmail.com", "nickname", "secret"), passwordEncoder!!)
+        passwordEncoder = createPasswordEncoder()
+        member = Member.register(createMemberRegisterRequest("dbtlek@gmail.com"), passwordEncoder!!)
     }
 
     @Test
-    fun createMember() {
+    fun registerMember() {
         assertEquals(member?.status, MemberStatus.PENDING)
     }
 
     @Test
     fun constructorNullCheck() {
         assertThrows<NullPointerException> {
-            Member.create(MemberCreateRequest(null!!, "nickname", "secret"), passwordEncoder!!)
+            Member.register(MemberRegisterRequest(null!!, "nickname", "secret"), passwordEncoder!!)
         }
         assertThrows<Exception> {
-            Member.create(MemberCreateRequest(null!!, "nickname", "secret"), passwordEncoder!!)
+            Member.register(MemberRegisterRequest(null!!, "nickname", "secret"), passwordEncoder!!)
         }
     }
 
@@ -109,8 +103,8 @@ class MemberTest {
     @Test
     fun invalidEmail() {
         assertThrows<IllegalArgumentException> {
-            Member.create(MemberCreateRequest("invalid-email", "nickname", "secret"), passwordEncoder!!)
+            Member.register(createMemberRegisterRequest("invalid-email"), passwordEncoder!!)
         }
-        Member.create(MemberCreateRequest("dbtlek@gmail.com", "nickname", "secret"), passwordEncoder!!)
+        Member.register(createMemberRegisterRequest("dbtlek@gmail.com"), passwordEncoder!!)
     }
 }

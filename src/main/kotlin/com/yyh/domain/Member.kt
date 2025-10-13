@@ -1,11 +1,28 @@
 package com.yyh.domain
 
+import jakarta.persistence.Embeddable
+import jakarta.persistence.Embedded
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import org.hibernate.annotations.NaturalId
+import org.hibernate.annotations.NaturalIdCache
 import org.springframework.util.Assert
 
+@NaturalIdCache
+@Entity
 data class Member(
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long,
+    @NaturalId
     val email: EmailValue,
     var nickname: String,
     var passwordHash: String,
+    @Enumerated(EnumType.STRING)
     var status: MemberStatus = MemberStatus.PENDING,
 ) {
     fun activate() {
@@ -36,17 +53,17 @@ data class Member(
         return this.status == MemberStatus.ACTIVE
     }
 
-    data class MemberCreateRequest(
+    data class MemberRegisterRequest(
         val email: String,
         val nickname: String,
         val password: String,
     )
 
     companion object {
-        fun create(memberCreateRequest: MemberCreateRequest, passwordEncoder: PasswordEncoder): Member {
-            val passwordHash = passwordEncoder.encode(memberCreateRequest.password)
+        fun register(memberRegisterRequest: MemberRegisterRequest, passwordEncoder: PasswordEncoder): Member {
+            val passwordHash = passwordEncoder.encode(memberRegisterRequest.password)
 
-            return Member(EmailValue(memberCreateRequest.email), memberCreateRequest.nickname, passwordHash)
+            return Member(0, EmailValue(memberRegisterRequest.email), memberRegisterRequest.nickname, passwordHash)
         }
     }
 }
