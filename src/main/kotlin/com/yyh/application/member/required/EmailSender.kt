@@ -1,6 +1,6 @@
-package com.yyh.application.required
+package com.yyh.application.member.required
 
-import com.yyh.domain.EmailValue
+import com.yyh.domain.shared.EmailValue
 
 /*
 * 이메일을 발송한다

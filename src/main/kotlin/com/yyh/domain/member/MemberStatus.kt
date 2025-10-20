@@ -1,4 +1,4 @@
-package com.yyh.domain
+package com.yyh.domain.member
 
 enum class MemberStatus {
     PENDING,

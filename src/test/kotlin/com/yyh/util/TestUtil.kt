@@ -1,7 +1,7 @@
 package com.yyh.util
 
-import com.yyh.domain.Member.MemberRegisterRequest
-import com.yyh.domain.PasswordEncoder
+import com.yyh.domain.member.MemberRegisterRequest
+import com.yyh.domain.member.PasswordEncoder
 
 fun createMemberRegisterRequest(email: String): MemberRegisterRequest =
     MemberRegisterRequest(email, "nickname", "secret")

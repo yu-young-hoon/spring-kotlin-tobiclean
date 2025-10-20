@@ -1,40 +1,42 @@
-package com.yyh.domain
+package com.yyh.domain.member
 
-import jakarta.persistence.Embeddable
-import jakarta.persistence.Embedded
-import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import com.yyh.domain.AbstractEntity
+import com.yyh.domain.shared.EmailValue
+import jakarta.persistence.*
 import org.hibernate.annotations.NaturalId
 import org.hibernate.annotations.NaturalIdCache
 import org.springframework.util.Assert
 
 @NaturalIdCache
 @Entity
-data class Member(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long,
+@Table(
+    name = "member",
+)
+class Member(
     @NaturalId
     val email: EmailValue,
+
     var nickname: String,
+
     var passwordHash: String,
-    @Enumerated(EnumType.STRING)
+
     var status: MemberStatus = MemberStatus.PENDING,
-) {
+
+    @OneToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    val detail: MemberDetail,
+) : AbstractEntity() {
     fun activate() {
         Assert.state(status == MemberStatus.PENDING, "Member status must be PENDING to activate.")
 
         this.status = MemberStatus.ACTIVE
+        this.detail.markActivatedAt()
     }
 
     fun deactivate() {
         Assert.state(status == MemberStatus.ACTIVE, "Member status must be ACTIVE to deactivate.")
 
         this.status = MemberStatus.DEACTIVATED
+        this.detail.markDeactivatedAt()
     }
 
     fun verifyPassword(password: String, passwordEncoder: PasswordEncoder): Boolean {
@@ -45,6 +47,11 @@ data class Member(
         this.nickname = nickname
     }
 
+    fun updateInfo(memberInfoUpdateRequest: MemberInfoUpdateRequest) {
+        this.nickname = memberInfoUpdateRequest.nickname
+        this.detail.introduction = memberInfoUpdateRequest.introduction
+    }
+
     fun changePassword(password: String, passwordEncoder: PasswordEncoder) {
         this.passwordHash = passwordEncoder.encode(password)
     }
@@ -53,25 +60,18 @@ data class Member(
         return this.status == MemberStatus.ACTIVE
     }
 
-    data class MemberRegisterRequest(
-        val email: String,
-        val nickname: String,
-        val password: String,
-    )
-
     companion object {
         fun register(memberRegisterRequest: MemberRegisterRequest, passwordEncoder: PasswordEncoder): Member {
             val passwordHash = passwordEncoder.encode(memberRegisterRequest.password)
-
-            return Member(0, EmailValue(memberRegisterRequest.email), memberRegisterRequest.nickname, passwordHash)
+            val email = EmailValue(memberRegisterRequest.email)
+            val memberDetail = MemberDetail.create()
+            return Member(
+                email = email,
+                nickname = memberRegisterRequest.nickname,
+                passwordHash = passwordHash,
+                detail = memberDetail
+            )
         }
     }
 }
 
-@JvmInline
-value class EmailValue(val address: String) {
-    init {
-        val emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
-        require(address.matches(emailPattern)) { "Invalid email format." }
-    }
-}

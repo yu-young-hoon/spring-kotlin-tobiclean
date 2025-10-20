@@ -1,14 +1,13 @@
-package com.yyh.domain
+package com.yyh.domain.member
 
-import com.yyh.domain.Member.MemberRegisterRequest
 import com.yyh.util.createMemberRegisterRequest
 import com.yyh.util.createPasswordEncoder
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertNotNull
 import org.junit.jupiter.api.assertThrows
-import kotlin.test.assertEquals
 
 class MemberTest {
     var member: Member? = null
@@ -23,6 +22,7 @@ class MemberTest {
     @Test
     fun registerMember() {
         assertEquals(member?.status, MemberStatus.PENDING)
+        assertNotNull(member?.detail?.registeredAt)
     }
 
     @Test
@@ -40,6 +40,7 @@ class MemberTest {
         member?.activate()
 
         assertEquals(member?.status, MemberStatus.ACTIVE)
+        assertNotNull(member?.detail?.activatedAt)
     }
 
     @Test
@@ -58,6 +59,7 @@ class MemberTest {
         member?.deactivate()
 
         assertEquals(member?.status, MemberStatus.DEACTIVATED)
+        assertNotNull(member?.detail?.deactivatedAt)
     }
 
     @Test
@@ -69,8 +71,8 @@ class MemberTest {
 
     @Test
     fun verifyPassword() {
-        assertTrue(member?.verifyPassword("secret", passwordEncoder!!)!!)
-        assertFalse(member?.verifyPassword("hello", passwordEncoder!!)!!)
+        Assertions.assertTrue(member?.verifyPassword("secret", passwordEncoder!!)!!)
+        Assertions.assertFalse(member?.verifyPassword("hello", passwordEncoder!!)!!)
     }
 
     @Test
@@ -86,18 +88,18 @@ class MemberTest {
     fun changePassword() {
         member?.changePassword("verysecret", passwordEncoder!!)
 
-        assertTrue(member?.verifyPassword("verysecret", passwordEncoder!!)!!)
+        Assertions.assertTrue(member?.verifyPassword("verysecret", passwordEncoder!!)!!)
     }
 
     @Test
     fun isActive() {
         member?.activate()
 
-        assertTrue(member?.isActive()!!)
+        Assertions.assertTrue(member?.isActive()!!)
 
         member?.deactivate()
 
-        assertFalse(member?.isActive()!!)
+        Assertions.assertFalse(member?.isActive()!!)
     }
 
     @Test
@@ -106,5 +108,18 @@ class MemberTest {
             Member.register(createMemberRegisterRequest("invalid-email"), passwordEncoder!!)
         }
         Member.register(createMemberRegisterRequest("dbtlek@gmail.com"), passwordEncoder!!)
+    }
+
+    @Test
+    fun updateInfo() {
+        val updateRequest = MemberInfoUpdateRequest(
+            nickname = "updatednickname2",
+            introduction = "Hello, I'm new here!"
+        )
+
+        member?.updateInfo(updateRequest)
+
+        assertEquals("updatednickname2", member?.nickname)
+        assertEquals("Hello, I'm new here!", member?.detail?.introduction)
     }
 }

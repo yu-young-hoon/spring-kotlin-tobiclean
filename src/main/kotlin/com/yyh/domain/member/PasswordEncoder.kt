@@ -1,4 +1,4 @@
-package com.yyh.domain
+package com.yyh.domain.member
 
 interface PasswordEncoder {
     fun encode(password: String): String

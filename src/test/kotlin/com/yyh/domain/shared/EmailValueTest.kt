@@ -1,9 +1,10 @@
-package com.yyh.domain
+package com.yyh.domain.shared
 
+import com.yyh.domain.shared.EmailValue
+import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import kotlin.test.assertEquals
 
 class EmailValueTest {
     @Test

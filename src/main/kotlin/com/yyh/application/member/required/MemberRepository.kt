@@ -1,6 +1,6 @@
-package com.yyh.application.required
+package com.yyh.application.member.required
 
-import com.yyh.domain.Member
+import com.yyh.domain.member.Member
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
