@@ -48,6 +48,8 @@ class Member(
     }
 
     fun updateInfo(memberInfoUpdateRequest: MemberInfoUpdateRequest) {
+        Assert.state(status == MemberStatus.ACTIVE, "Member status must be ACTIVE to activate.")
+
         this.nickname = memberInfoUpdateRequest.nickname
         this.detail.introduction = memberInfoUpdateRequest.introduction
     }

@@ -4,6 +4,7 @@ import com.yyh.application.member.provided.MemberRegister
 import com.yyh.application.member.required.EmailSender
 import com.yyh.application.member.required.MemberRepository
 import com.yyh.domain.member.Member
+import com.yyh.domain.member.MemberInfoUpdateRequest
 import com.yyh.domain.member.MemberRegisterRequest
 import com.yyh.domain.member.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -26,5 +27,17 @@ class MemberService(
             body = "Thank you for registering, ${member.nickname}!"
         )
         return savedMember
+    }
+
+    override fun activate(memberId: Long): Member {
+        TODO("Not yet implemented")
+    }
+
+    override fun deactivate(memberId: Long): Member {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateInfo(memberId: Long, memberInfoUpdateRequest: MemberInfoUpdateRequest): Member {
+        TODO("Not yet implemented")
     }
 }

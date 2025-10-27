@@ -114,7 +114,8 @@ class MemberTest {
     fun updateInfo() {
         val updateRequest = MemberInfoUpdateRequest(
             nickname = "updatednickname2",
-            introduction = "Hello, I'm new here!"
+            profileAddress = "http://example.com/profile2.png",
+            introduction = "Hello, I'm new here!",
         )
 
         member?.updateInfo(updateRequest)
